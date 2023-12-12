@@ -1,53 +1,50 @@
-package com.example.rickandmortyapp.ui.List
+package com.example.rickandmortyapp.ui.List.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.rickandmortyapp.databinding.FragmentCharacterListBinding
-import com.example.rickandmortyapp.network.NetworkModule
-import com.example.rickandmortyapp.network.RickAndMortyApiService
-import com.example.rickandmortyapp.network.response.RickAndMortyResponse
 import com.example.rickandmortyapp.ui.List.adapter.CharacterListAdapter
+import com.example.rickandmortyapp.ui.List.viewmodel.CharacterListViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import retrofit2.Retrofit
+
 
 
 @AndroidEntryPoint
 class CharacterListFragment : Fragment() {
+
+    private val characterListViewModel by viewModels<CharacterListViewModel>()
 
     private lateinit var characterListAdapter: CharacterListAdapter
 
     private var _binding: FragmentCharacterListBinding? = null
     private val binding get() = _binding!!
 
-   private  lateinit var retrofit: Retrofit
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         initUI()
     }
 
     private fun initUI() {
-        retrofit = NetworkModule.provideRetrofit()
-        characterListAdapter = CharacterListAdapter(emptyList())
+        characterListViewModel.getCharacters()
+       characterListAdapter = CharacterListAdapter(emptyList())
         lifecycleScope.launch {
-            val characterList = retrofit.create(RickAndMortyApiService::class.java).getCharacters()
-            if (characterList.isSuccessful) {
-                val response : RickAndMortyResponse? = characterList.body()
-                if (response != null) {
-                    withContext(Dispatchers.Main) {
-                        characterListAdapter.updateList(response.characters)
-                    }
-                }
-            }
+           repeatOnLifecycle(Lifecycle.State.STARTED){
+               characterListViewModel.characters.collect{
+                   characterListAdapter.updateList(it)
+               }
+           }
         }
         binding.rvCharacterList.apply {
             layoutManager = GridLayoutManager(context, 2)

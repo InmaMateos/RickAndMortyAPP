@@ -1,5 +1,7 @@
-package com.example.rickandmortyapp.network
+package com.example.rickandmortyapp.data.network
 
+import com.example.rickandmortyapp.data.RepositoryImpl
+import com.example.rickandmortyapp.domain.Repository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,7 +27,12 @@ object NetworkModule {
 
 
     @Provides
-    fun provideRickAndMortyApiService(retrofit: Retrofit): RickAndMortyApiService{
+    fun provideRickAndMortyApiService(retrofit: Retrofit): RickAndMortyApiService {
     return retrofit.create(RickAndMortyApiService::class.java)
+    }
+
+    @Provides
+    fun provideRepository(apiService: RickAndMortyApiService): Repository {
+        return RepositoryImpl(apiService)
     }
 }
