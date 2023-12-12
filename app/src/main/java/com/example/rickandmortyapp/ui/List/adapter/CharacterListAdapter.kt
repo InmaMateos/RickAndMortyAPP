@@ -1,0 +1,28 @@
+package com.example.rickandmortyapp.ui.List.adapter
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.example.rickandmortyapp.R
+import com.example.rickandmortyapp.network.response.Result
+
+class CharacterListAdapter (private var characterList: List<Result> ): RecyclerView.Adapter<CharacterListViewHolder>() {
+
+    fun updateList(characterList: List<Result>){
+       this.characterList = characterList
+        notifyDataSetChanged()
+
+    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CharacterListViewHolder {
+        return CharacterListViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.item_character, parent, false)
+        )
+    }
+
+    override fun onBindViewHolder(holder: CharacterListViewHolder, position: Int) {
+       holder.render(characterList[position])
+    }
+
+    override fun getItemCount(): Int = characterList.size
+
+}
