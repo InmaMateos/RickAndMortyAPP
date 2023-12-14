@@ -6,7 +6,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rickandmortyapp.R
 import com.example.rickandmortyapp.data.network.response.Result
 
-class CharacterListAdapter (private var characterList: List<Result> ): RecyclerView.Adapter<CharacterListViewHolder>() {
+class CharacterListAdapter (
+    private var characterList: List<Result>,
+    private val onItemSelected:(Result) -> Unit)
+    : RecyclerView.Adapter<CharacterListViewHolder>() {
 
     fun updateList(characterList: List<Result>){
        this.characterList = characterList
@@ -20,7 +23,7 @@ class CharacterListAdapter (private var characterList: List<Result> ): RecyclerV
     }
 
     override fun onBindViewHolder(holder: CharacterListViewHolder, position: Int) {
-       holder.render(characterList[position])
+       holder.render(characterList[position], onItemSelected)
     }
 
     override fun getItemCount(): Int = characterList.size

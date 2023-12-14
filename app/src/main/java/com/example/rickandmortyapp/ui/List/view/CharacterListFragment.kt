@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.rickandmortyapp.databinding.FragmentCharacterListBinding
 import com.example.rickandmortyapp.ui.List.adapter.CharacterListAdapter
@@ -38,7 +39,9 @@ class CharacterListFragment : Fragment() {
 
     private fun initUI() {
         characterListViewModel.getCharacters()
-       characterListAdapter = CharacterListAdapter(emptyList())
+        characterListAdapter = CharacterListAdapter(emptyList(), onItemSelected = {
+           findNavController().navigate(CharacterListFragmentDirections.actionCharacterListFragmentToDetailFragment2(it.id))
+       })
         lifecycleScope.launch {
            repeatOnLifecycle(Lifecycle.State.STARTED){
                characterListViewModel.characters.collect{
